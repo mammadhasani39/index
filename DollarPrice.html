@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dollar Price</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+        background-color: #f0f0f0;
+    }
+    #price {
+        font-size: 2em;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    #status {
+        margin-top: 10px;
+        color: #555;
+    }
+</style>
+</head>
+<body>
+
+<h1>قیمت دلار</h1>
+<div id="price">Loading...</div>
+<div id="status">Fetching data...</div>
+
+<script>
+async function fetchDollarPrice() {
+    const priceEl = document.getElementById('price');
+    const statusEl = document.getElementById('status');
+
+    try {
+        statusEl.textContent = 'Fetching data...';
+        const response = await fetch('https://hakhamanesh-bot.ir/api/arzp');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        const usd = data.currencies.find(c => c.name === "دلار آمریکا");
+
+        if (!usd) {
+            priceEl.textContent = 'N/A';
+            statusEl.textContent = 'USD not found';
+            return;
+        }
+
+        let sellPrice = usd.price_sell;
+
+        const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+        const englishDigits = "0123456789";
+        for (let i = 0; i < persianDigits.length; i++) {
+            sellPrice = sellPrice.replaceAll(persianDigits[i], englishDigits[i]);
+        }
+
+        priceEl.textContent = `قیمت دلار: ${sellPrice}`;
+        statusEl.textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+
+    } catch (err) {
+        priceEl.textContent = 'Error';
+        statusEl.textContent = err.message;
+        console.error(err);
+    }
+}
+
+fetchDollarPrice();
+setInterval(fetchDollarPrice, 5000);
+</script>
+
+</body>
+</html>
