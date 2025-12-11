@@ -242,8 +242,9 @@
     botText.classList.add("blinking");
     chatArea.prepend(botBubble);
 
-    fullConversation.push("کاربر: " + question);
-    const prompt = fullConversation.join("\n") + "\nبات:";
+    fullConversation.push(question);
+
+    const prompt = fullConversation.join("\n");
     const encoded = encodeURIComponent(prompt);
     const url = "https://api.api-code.ir/gpt-4o/?text=" + encoded;
 
